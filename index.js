@@ -20,8 +20,8 @@ process.argv.forEach(function(val, index, array) {
 });
 
 console.log('gateway: ' + gateway);
-console.log('record to call: ' + (count == 0 ? '*' : count));
-console.log('clean mongodb: ' + clean);
+console.log('record to insert: ' + (count == 0 ? '*' : count));
+console.log('clean mongodb data: ' + clean);
 if (gateway == '') {
     console.log('no gateway specified.');
     process.exit(0);
