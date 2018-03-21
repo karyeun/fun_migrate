@@ -1,0 +1,25 @@
+{
+  "name": "fun_migrate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://karyeun@github.com/karyeun/fun_migrate.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/karyeun/fun_migrate/issues"
+  },
+  "homepage": "https://github.com/karyeun/fun_migrate#readme",
+  "dependencies": {
+    "mongodb": "^3.0.4",
+    "mssql": "^4.1.0",
+    "nconf": "^0.10.0"
+  }
+}

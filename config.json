@@ -1,0 +1,10 @@
+{
+    "mongodb-url": "mongodb://sa:1@ds035485.mlab.com:35485/first-mongo",
+    "mongodb-db": "first-mongo",
+
+    "mssql-user": "sa",
+    "mssql-password": "Funnet123",
+    "mssql-server": "WIN-0S1CKRDEL55\\SQL2012",
+    "mssql-database": "SMS_TransactionReporting"
+
+}
