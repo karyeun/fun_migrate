@@ -1,6 +1,6 @@
 {
-    "mongodb-url": "mongodb://sa:1@ds035485.mlab.com:35485/first-mongo",
-    "mongodb-db": "first-mongo",
+    "mongodb-url": "mongodb://localhost:27017/funnetdb",
+    "mongodb-db": "funnetdb",
 
     "mssql-user": "sa",
     "mssql-password": "Funnet123",

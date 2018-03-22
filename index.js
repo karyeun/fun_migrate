@@ -32,7 +32,7 @@ if ('ICE,MEXCOMM,MK,MMP,'.indexOf(gateway + ',') < 0) {
     process.exit(0);
 }
 
-process.exit(0);
+//process.exit(0);
 
 //Data Source=sit-engagement-db.database.windows.net;
 //Initial Catalog=sit.boldlink;Persist Security Info=True;
@@ -58,7 +58,8 @@ if (gateway != 'MMP') {
     if (gateway == 'MEXCOMM') table += '_Mexcomm';
     else table += ('_' + gateway);
 }
-var query = 'select ' + (count != '0' ? 'top ' + count + ' ' : '') + '* from ' + table;
+var query = 'select ' + (count != '0' ? 'top ' + count + ' ' : '') + '* from ' + table; //+ ' '+
+//'order by msisdn ';
 console.log(query);
 sql.connect(config).then(pool => {
     return pool.request()
@@ -66,35 +67,88 @@ sql.connect(config).then(pool => {
         .query(query);
 
 }).then(result => {
-    var count = result.recordset.length;
-    var counter = 0;
-    result.recordset.forEach(rec => {
-        var subscriber = {
-            "gateway": gateway,
-            "msisdn": rec.msisdn,
-            "shortCode": rec.shortcode,
-            "keyword": rec.Keyword.toUpper(),
-            "telcoId": rec.TelcoID.toUpper(),
-            "service": rec.Reply.toUpper()
-        }
+    if (clean) {
+        db.delete('subscribers', { 'gateway': gateway }).then(deleted => {
+            //console.log('deleted>' + deleted);
+            var del = JSON.parse(deleted);
+            console.log('deleted records>' + del.n);
 
-        if (subscriber.gateway == 'MMP') {
-            if (subscriber.telcoId == '4') subscriber.telcoId = "MY_UMOBILE";
-        }
-        db.save('subscribers', subscriber).then(res => {
-            console.log('[' + subscriber.service + ']' +
+            var count = result.recordset.length;
+            var counter = 0;
+            console.log('record to migrate: ' + count);
+            var subscribers = [];
+            result.recordset.forEach(rec => {
+                var subscriber = {
+                    "gateway": gateway,
+                    "msisdn": rec.msisdn,
+                    "shortCode": rec.shortcode,
+                    //"keyword":  rec.Keyword.toUpperCase(),
+                    "telcoId": rec.TelcoID.toUpperCase(),
+                    //"service": rec.Reply.toUpperCase()
+                }
+                if (rec.Reply) subscriber.service = rec.Reply.toUpperCase(); //could be NULL
+                if (rec.Keyword) subscriber.keyword = rec.Keyword.toUpperCase(); //could be NULL
+
+                if (subscriber.gateway == 'MMP') {
+                    if (subscriber.telcoId == '4') subscriber.telcoId = "MY_UMOBILE";
+                }
+
+                console.log('Preparing [' + subscriber.service + '] ' +
+                    subscriber.msisdn + '/' +
+                    subscriber.shortCode + '/' +
+                    subscriber.keyword + '/' +
+                    subscriber.telcoId + ' for migration.');
+
+                subscribers.push(subscriber);
+            });
+
+            db.bulkSave('subscribers', subscribers).then(res => {
+                console.log('migration of ' + subscribers.length + ' subscriber(' + gateway + ') are done.');
+                process.exit(0);
+            }).catch(err => {
+                console.log('err bulkSave(): ' + err);
+            });
+        }).catch(err => {
+            console.log('err delete(): ' + err);
+        });
+    } else {
+        var count = result.recordset.length;
+        var counter = 0;
+        console.log('record to migrate: ' + count);
+        var subscribers = [];
+        result.recordset.forEach(rec => {
+            var subscriber = {
+                "gateway": gateway,
+                "msisdn": rec.msisdn,
+                "shortCode": rec.shortcode,
+                //"keyword":  rec.Keyword.toUpperCase(),
+                "telcoId": rec.TelcoID.toUpperCase(),
+                //"service": rec.Reply.toUpperCase()
+            }
+            if (rec.Reply) subscriber.service = rec.Reply.toUpperCase(); //could be NULL
+            if (rec.Keyword) subscriber.keyword = rec.Keyword.toUpperCase(); //could be NULL
+
+            if (subscriber.gateway == 'MMP') {
+                if (subscriber.telcoId == '4') subscriber.telcoId = "MY_UMOBILE";
+            }
+
+            console.log('Preparing [' + subscriber.service + '] ' +
                 subscriber.msisdn + '/' +
                 subscriber.shortCode + '/' +
                 subscriber.keyword + '/' +
-                subscriber.telcoId + '/' +
-                ' migrated.');
-            counter++;
-            if (counter == count) {
-                cosnole.log('migration of ' + count + ' subscriber(' + gateway + ') are done.');
-                process.exit(0);
-            }
+                subscriber.telcoId + ' for migration.');
+
+            subscribers.push(subscriber);
         });
-    });
+
+        db.bulkSave('subscribers', subscribers).then(res => {
+            console.log('migration of ' + subscribers.length + ' subscriber(' + gateway + ') are done.');
+            process.exit(0);
+        }).catch(err => {
+            console.log('err bulkSave(): ' + err);
+        });
+    }
+
 }).catch(err => {
     console.log(err);
     process.exit(1);
