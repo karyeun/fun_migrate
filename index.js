@@ -68,7 +68,7 @@ sql.connect(config).then(pool => {
 
 }).then(result => {
     if (clean) {
-        db.delete('subscriber', { 'gateway': gateway }).then(deleted => {
+        db.delete('subscribers', { 'gateway': gateway }).then(deleted => {
             //console.log('deleted>' + deleted);
             var del = JSON.parse(deleted);
             console.log('deleted records>' + del.n);
@@ -102,7 +102,7 @@ sql.connect(config).then(pool => {
                 subscribers.push(subscriber);
             });
 
-            db.bulkSave('subscriber', subscribers).then(res => {
+            db.bulkSave('subscribers', subscribers).then(res => {
                 console.log('migration of ' + subscribers.length + ' subscriber(' + gateway + ') are done.');
                 process.exit(0);
             }).catch(err => {
@@ -141,7 +141,7 @@ sql.connect(config).then(pool => {
             subscribers.push(subscriber);
         });
 
-        db.bulkSave('subscriber', subscribers).then(res => {
+        db.bulkSave('subscribers', subscribers).then(res => {
             console.log('migration of ' + subscribers.length + ' subscriber(' + gateway + ') are done.');
             process.exit(0);
         }).catch(err => {
