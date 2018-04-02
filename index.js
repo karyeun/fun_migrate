@@ -85,6 +85,7 @@ sql.connect(config).then(pool => {
                     //"keyword":  rec.Keyword.toUpperCase(),
                     "telcoId": rec.TelcoID.toUpperCase(),
                     //"service": rec.Reply.toUpperCase()
+                    "subscribeOn": new Date(rec.DtCreated)
                 }
                 if (rec.Reply) subscriber.service = rec.Reply.toUpperCase(); //could be NULL
                 if (rec.Keyword) subscriber.keyword = rec.Keyword.toUpperCase(); //could be NULL
